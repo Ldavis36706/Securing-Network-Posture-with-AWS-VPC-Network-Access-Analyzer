@@ -46,9 +46,12 @@ Figure 2: From the original architecture, a VPC peering connection between VPC 1
 
 <br />
 
-Figure 2: The user can access the Bastion Host and Public Server instances. From there, the user can connect by using SSH into the App Server instance from either of the public Bastion Host or Public Server instances.
+I used a prebuilt template to analyze available traffic paths from an internet gateway. Network Access Analyzer uses automated reasoning algorithms to analyze the network paths that a packet can take between resources in an Amazon Web Services (AWS) network. The key concepts of the Network Access Analyzer are Network Access Scope and Findings. The Network Access Analyzer determines the types of findings that the analysis produces. You add entries to MatchPaths to specify the types of network paths to identify. You add entries to ExcludePaths to specify the types of network paths to exclude. Findings are potential paths in your network that match any of the MatchPaths entries in your Network Access Scope, but do not match any of the ExcludePaths entries in your Network Access Scope.
+
  <br/>
-![Figure 2 Test Connectivity](https://github.com/user-attachments/assets/d9b619a7-95f6-46fc-8376-19de3b0b639a)
+ 
+![network access scope template](https://github.com/user-attachments/assets/8d824e51-dc02-48fe-8994-765524416718)
+
 
 <br />
 
