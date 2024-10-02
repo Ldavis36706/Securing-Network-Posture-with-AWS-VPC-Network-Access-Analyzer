@@ -81,27 +81,31 @@ The outbound path analysis starts from the network interface of the EC2 in vpc1 
 
 <br />
 
-Edit Inbound Rules to only allow traffic from the Bastion Host:
+I used a custom Network Access Scope to verify that a private subnet does not have internet access. For a subnet to be private, there shouldn’t be a route associated with an internet gateway.
+
  <br/>
-![Update Security Group Rules for App Server from Bastion Server Only](https://github.com/user-attachments/assets/37193e94-fab7-4bd0-809b-0ca12beff73f)
+ 
+![Verify private subnet analysis](https://github.com/user-attachments/assets/a31fdfb0-ff6b-4191-8598-ebbbf7f281ee)
+
 
 <br />
 
-Unable to connect to the App Server from the Public Server after updating the inbound rules: This is compliant behavior.
+I defined a custom Network Access Scope to verify VPC segmentation. I assumed there was a use case where vpc1 and vpc3 require a private connection through VPC peering. The analysis verifies that there aren’t any VPC peering connections.
  <br/>
-![Unsuccessful SSH to App Server from Public Server](https://github.com/user-attachments/assets/6c8c230b-32db-4805-9b34-62d08708b8d1)
+![verify vpc segmentation analysis](https://github.com/user-attachments/assets/544200c7-96f8-4380-9ad7-ac6eff0fc5cc)
 
 
-I checked for connectivity to the App Server from the Bastion Host after updating the inbound rules: It was successful. This is compliant behavior.
+
+I created a VPC peering connection between vpc1 and vpc3.
  <br/>
-![Successful SSH to App Server from Bastion Server](https://github.com/user-attachments/assets/c42c1a6b-0401-4661-ab9d-cc2997386aa2)
+![Create peering connection request](https://github.com/user-attachments/assets/49440e9b-85a0-438c-9323-3a86d0ab5063)
+
 
 <br />
 
-Figure 4: I turned the Public Server into another Bastion Host, and added it to the BastionHostSG security group. The user can use the Bastion Host or the second Bastion Host (Public Server) as a compliant way to connect by using SSH into the App Server. Both the Bastion Host and Public Server are assigned the BastionHostSG.
+I ran the previous analysis to test for VPC peering connection. The analysis shows that vpc1 and vpc3 are peered. Therefore, vpc2 has no peering connection to any other VPC. 
  <br/>
-![Figure 4](https://github.com/user-attachments/assets/d1805b90-76e2-4429-a8ca-cd1ba4590422)
-
+![vpc segmentation analysis after peering connection created](https://github.com/user-attachments/assets/bcac1025-f4ff-4d0f-98e9-c5df26d122c6)
 
 <br />
 
