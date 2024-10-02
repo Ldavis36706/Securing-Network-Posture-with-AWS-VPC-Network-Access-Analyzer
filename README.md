@@ -55,24 +55,29 @@ I used a prebuilt template to analyze available traffic paths from an internet g
 
 <br />
 
-I was able to connect to the App Server using the Bastion Host instance:
+I created an inbound path and performed an analysis for it. The inbound path analysis starts from the internet gateway of vpc3 all the way up to the network interface of vpc3-public-ec2.
+If you review the network diagram provided at the top of this page. Both VPC 2 and VPC 3 have an internet gateway. You might ask why didn’t the analysis display an inbound path for vpc2?
+The reason is that the Network Access Scope definition for this analysis has a source of internet gateway and a destination of network interface. In this case, vpc2-private-ec2 is in a private subnet, and internet gateways do not have a direct path to network interfaces in a private subnet.
+
  <br/>
-![Successful SSH to App Server from Bastion Server](https://github.com/user-attachments/assets/f3de6f20-45bb-42d4-812e-0c202bd42345)
+ 
+![inbound path analysis](https://github.com/user-attachments/assets/2734ed81-b42f-48db-a2b6-55d51ff66fe8)
 
 
 <br />
 
-I was able to connect to the App Server using the Public Server instance:
+I created a VPC endpoint for the Amazon S3 service and verified its path using the Network Access Analyzer. VPC endpoints increase the security posture of a VPC by permitting connectivity to services without the need of an internet gateway. So your traffic stays within the AWS network.
  <br/>
-![Successful SSH to App Server from Public Server](https://github.com/user-attachments/assets/770bfe89-e564-4b5d-8cfb-4b856cc46d66)
+![Create VPC Endpoint 1](https://github.com/user-attachments/assets/ae7b1a48-ed68-4e98-9492-44993003a27d)
 
 
 <br />
 
-Figure 3: Updating the App Server security group allows traffic only from the Bastion Host as a source. 2. This blocks the connection attempts from the Public Server.
- <br/>
-![Figure 3 Restricting Access to Public Server](https://github.com/user-attachments/assets/78575ae0-76d1-4e1d-8efd-bb0ee35e37fd)
+The outbound path analysis starts from the network interface of the EC2 in vpc1 all the way up to the Amazon S3 endpoint. This analysis helps verify traffic paths, and can even demonstrate compliance in certain use cases.
 
+ <br/>
+ 
+![s3 analyzer results](https://github.com/user-attachments/assets/c07115f9-ebb3-45f1-b485-a6adc93bc726)
 
 <br />
 
