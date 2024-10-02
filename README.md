@@ -31,13 +31,17 @@ It's very important to understand the architectures that you are working with. I
  ![Figure 1](https://github.com/user-attachments/assets/000087ad-92cf-4e56-8ab3-0beb75c5f3af)
 Figure 1: The current preconfigured architecture has three VPCs: VPC 1 contains one private subnet and one instance. VPC 2 has a public subnet, a private subnet with an Amazon EC2 instance, an internet gateway, and a NAT gateway. And VPC 3 has an internet gateway, a public subnet, and an EC2 instance.
 <br />
+<br />
+<br />
 
 
+The following architecture diagram shows the configuration to be added. I created Amazon Simple Storage Service (Amazon S3) gateway endpoint in VPC 1. Additionally, I created a VPC peering connection between VPC 1 and VPC 3.
+<br/>
 
-Review App Server Inbound Rules: This configuration allows inbound connections to App Server from any IP address over port 22. All other ports are denied access. This allows Bastion Host to connect to App Server. However, unauthorized hosts from any IP address (source 0.0.0.0/0) can also connect to App Server. Currently, this security group is noncompliant based on the company security policy.
- <br/>
-![Review App Server Inbound rules](https://github.com/user-attachments/assets/4a9c9c4f-6128-4202-97db-4c38b0a405cb)
+ ![Figure 2](https://github.com/user-attachments/assets/007b8b94-a848-4dff-83c0-b34d812fdec9)
 
+
+Figure 2: From the original architecture, a VPC peering connection between VPC 1 and VPC 3 has been made. An Amazon S3 gateway endpoint has been added to VPC 1.
 
 
 <br />
