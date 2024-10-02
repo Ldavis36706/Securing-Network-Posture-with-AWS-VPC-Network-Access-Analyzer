@@ -24,11 +24,15 @@ AWS (Amazon Web Services): This project was conducted entirely in AWS, utilizing
 
 <p align="center">
 
-Figure 1: Three Amazon EC2 instances in VPC A: The App Server instance is an application server that resides in the private subnet. The Bastion Host instance is used to connect to internal, protected resources, such as App Server. The Public Server instance is a test server. It is used to test whether Secure Shell (SSH) traffic is allowed into App Server from any hosts besides the Bastion Host instance. The Public Server instance resides in the public subnet.
- <br/>
-![Before Image of three Amazon EC2 instances](https://github.com/user-attachments/assets/709b8d1d-e50b-452e-95c7-0b28c7ca7d46)
+It's very important to understand the architectures that you are working with. I took a deep dive into the architecture by reviewing some of the resources that make up the architecture, which included: VPC's, Subnets, Route tables, Internet gateways, and NAT gateways.
 
+ <br/>
+ 
+ ![Figure 1](https://github.com/user-attachments/assets/000087ad-92cf-4e56-8ab3-0beb75c5f3af)
+Figure 1: The current preconfigured architecture has three VPCs: VPC 1 contains one private subnet and one instance. VPC 2 has a public subnet, a private subnet with an Amazon EC2 instance, an internet gateway, and a NAT gateway. And VPC 3 has an internet gateway, a public subnet, and an EC2 instance.
 <br />
+
+
 
 Review App Server Inbound Rules: This configuration allows inbound connections to App Server from any IP address over port 22. All other ports are denied access. This allows Bastion Host to connect to App Server. However, unauthorized hosts from any IP address (source 0.0.0.0/0) can also connect to App Server. Currently, this security group is noncompliant based on the company security policy.
  <br/>
