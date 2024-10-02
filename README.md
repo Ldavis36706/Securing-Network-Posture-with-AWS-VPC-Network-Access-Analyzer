@@ -39,17 +39,12 @@ The following architecture diagram shows the configuration to be added. I create
 <br/>
 
  ![Figure 2](https://github.com/user-attachments/assets/007b8b94-a848-4dff-83c0-b34d812fdec9)
-
-
 Figure 2: From the original architecture, a VPC peering connection between VPC 1 and VPC 3 has been made. An Amazon S3 gateway endpoint has been added to VPC 1.
 
 
 <br />
 
 I used a prebuilt template to analyze available traffic paths from an internet gateway. Network Access Analyzer uses automated reasoning algorithms to analyze the network paths that a packet can take between resources in an Amazon Web Services (AWS) network. The key concepts of the Network Access Analyzer are Network Access Scope and Findings. The Network Access Analyzer determines the types of findings that the analysis produces. You add entries to MatchPaths to specify the types of network paths to identify. You add entries to ExcludePaths to specify the types of network paths to exclude. Findings are potential paths in your network that match any of the MatchPaths entries in your Network Access Scope, but do not match any of the ExcludePaths entries in your Network Access Scope.
-
- <br/>
- 
 ![network access scope template](https://github.com/user-attachments/assets/8d824e51-dc02-48fe-8994-765524416718)
 
 
@@ -58,9 +53,6 @@ I used a prebuilt template to analyze available traffic paths from an internet g
 I created an inbound path and performed an analysis for it. The inbound path analysis starts from the internet gateway of vpc3 all the way up to the network interface of vpc3-public-ec2.
 If you review the network diagram provided at the top of this page. Both VPC 2 and VPC 3 have an internet gateway. You might ask why didn’t the analysis display an inbound path for vpc2?
 The reason is that the Network Access Scope definition for this analysis has a source of internet gateway and a destination of network interface. In this case, vpc2-private-ec2 is in a private subnet, and internet gateways do not have a direct path to network interfaces in a private subnet.
-
- <br/>
- 
 ![inbound path analysis](https://github.com/user-attachments/assets/2734ed81-b42f-48db-a2b6-55d51ff66fe8)
 
 
@@ -74,85 +66,76 @@ I created a VPC endpoint for the Amazon S3 service and verified its path using t
 <br />
 
 The outbound path analysis starts from the network interface of the EC2 in vpc1 all the way up to the Amazon S3 endpoint. This analysis helps verify traffic paths, and can even demonstrate compliance in certain use cases.
-
- <br/>
- 
 ![s3 analyzer results](https://github.com/user-attachments/assets/c07115f9-ebb3-45f1-b485-a6adc93bc726)
 
 <br />
 
 I used a custom Network Access Scope to verify that a private subnet does not have internet access. For a subnet to be private, there shouldn’t be a route associated with an internet gateway.
-
- <br/>
- 
 ![Verify private subnet analysis](https://github.com/user-attachments/assets/a31fdfb0-ff6b-4191-8598-ebbbf7f281ee)
 
 
 <br />
 
 I defined a custom Network Access Scope to verify VPC segmentation. I assumed there was a use case where vpc1 and vpc3 require a private connection through VPC peering. The analysis verifies that there aren’t any VPC peering connections.
- <br/>
 ![verify vpc segmentation analysis](https://github.com/user-attachments/assets/544200c7-96f8-4380-9ad7-ac6eff0fc5cc)
 
 
 
 I created a VPC peering connection between vpc1 and vpc3.
- <br/>
 ![Create peering connection request](https://github.com/user-attachments/assets/49440e9b-85a0-438c-9323-3a86d0ab5063)
 
 
 <br />
 
 I ran the previous analysis to test for VPC peering connection. The analysis shows that vpc1 and vpc3 are peered. Therefore, vpc2 has no peering connection to any other VPC. 
- <br/>
 ![vpc segmentation analysis after peering connection created](https://github.com/user-attachments/assets/bcac1025-f4ff-4d0f-98e9-c5df26d122c6)
 
 <br />
 
-I updated the security group attached to App Server so that it only allows traffic from instances with the BastionHostSG attached:
+I used a Network Access Analyzer to validate that the private subnet in vpc2 uses a NAT gateway when accessing the internet. At the same time, validate that the private subnet in vpc1 does not have access to the internet. A common use case for having a NAT gateway in a VPC is to establish internet access for a private subnet. There are some use cases where you have a private subnet that does not require access to the internet.
+
+Review the private subnets in the architecture diagram provided in the beginning section of this lab. Both VPC 1 and VPC 2 have private subnets. However, only VPC 2 contains a NAT gateway. The diagram depicts a use case where the private subnet in VPC 2 requires access to the internet, but the private subnet in VPC 1 does not require internet access. The findings do not include the private EC2 instance in vpc1.
  <br/>
-![Update Security Group Rules for App Server from Bastion Server Instances](https://github.com/user-attachments/assets/3625377c-82ec-4291-a1f4-049606b191ed)
-
+![NAT use verification analysis](https://github.com/user-attachments/assets/6b56a585-0557-475a-aee2-18d5420f213d)
 
 <br />
 
-I checked for connectivity to the App Server from the Public Server after updating the security group: It was successful. This is now compliant behavior because you made the Public Server an additional bastion host by adding it to the Bastion Host security group.
+Network Access Scopes can be duplicated, modified, and then used to run a new analysis. This can help save time from creating a new Network Access Scope.
+I duplicated the verify-NAT-use Network Access Scope created in the previous task, and use the new scope to check any internet access path that doesn’t include a NAT gateway. The analysis confirms what you observed in the architecture diagram: VPC 3 can access the internet directly, without the need of a NAT gateway.
+
+
  <br/>
-![Successful SSH to App Server from Public Server after adding to Bastion SG](https://github.com/user-attachments/assets/823855de-93fc-403d-8226-288db782e42d)
-
-
-<br />
-<h2>Challenge: Troubleshooting connectivity within the VPC</h2>
-<br />
-
-Figure 5: The Apache server is running on an EC2 instance. The EC2 instance needs the correct security group rules to allow a connection through the internet. This shows a sample test page or a custom html page to show that you have connectivity to your Apache server.
- <br/>
-![Figure 5](https://github.com/user-attachments/assets/d0ad2e3d-c2be-449d-8e2b-d74d064379e3)
+![Duplicate and modify scope](https://github.com/user-attachments/assets/3a163b9d-3380-499c-b58e-1ccb89349e36)
 
 
 <br />
 
-Here are the inbound rules for the Apache Server prior to me testing connectivity using http://3.8.111.1
- <br/>
-![Inbound Rules before testing connectivity  to Apache Server](https://github.com/user-attachments/assets/5fabef28-8431-4afa-8e98-f2fe1897b570)
-<br />
+I configured a network change to demonstrate a compliant configuration. I assumed a use case where the private instance in vpc2 is required to access a specific IP address and port number. The requirement is as follows: 
+Allow egress traffic to destination IP address 205.251.242.103 (this is an Amazon.com IP address).
+Destination port number is 443.
 
-I was not able to connect to the Apache server using http://3.84.111.1:
- <br/>
-![Unsuccessful Apache Server](https://github.com/user-attachments/assets/8504963f-0c90-4e43-a2a1-cb9b5088e04d)
-<br />
+Before making changes, use the Network Access Analyzer to review the current internet bound configuration path for vpc2-private-ec2.
+![vpc2 private outbound analysis](https://github.com/user-attachments/assets/fc4e221b-823c-4a18-aee1-212042016b5a)
 
-I suspected issue was that the instance need to allow traffic from "HTTP" port 80 instead of "HTTPS" port 443. I made configuration changes to address to address the issue.
- <br/>
-![image](https://github.com/user-attachments/assets/ad991e31-c5c8-481f-846e-6b2eb9198d82)
+<br/>
 
-<br />
+Here are the outbound rules before I made changes. 
+![Edit outbound rules before](https://github.com/user-attachments/assets/931007ba-580b-4511-a81f-f8fa43942688)
 
-I refreshed the browser and I was able to connect to the Apache test page.
- <br/>
-![Successful connection to Apache Server](https://github.com/user-attachments/assets/f5e74d12-4a1e-4ab9-a1ec-8e9cb2585717)
+<br/>
 
-<br />
+Here are the updated outbound rules. 
+![Updated outbound rules](https://github.com/user-attachments/assets/19af4fae-faa3-46a2-9c78-4a5d4bdcb9a2)
+
+<br/>
+
+I ran the analysis which shows:
+The security group destination CIDR address is 205.251.242.103/32, and the outbound port is 443.
+This analysis validates the current configuration is compliant with the requirement.
+![Updated outbound analysis compliant](https://github.com/user-attachments/assets/f124e271-d683-43a1-afd3-d30d970c1307)
+
+
+<br/>
 
 <h2>Summary</h2>
 The project comprised tasks aimed at enhancing network security and optimizing resource connectivity across multiple VPCs. Key tasks included using Network Access Scope templates to analyze inbound traffic, verifying the use of NAT gateways for internet traffic, and configuring custom Network Access Scopes to assess private subnets and VPC segmentation. The final step involved updating security groups to match required security policies, ensuring controlled access between VPC resources.
