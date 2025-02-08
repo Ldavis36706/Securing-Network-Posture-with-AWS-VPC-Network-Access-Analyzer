@@ -1,6 +1,6 @@
 # Securing Network Posture with AWS VPC Network Access Analyzer
 
- ### [YouTube Demonstration](https://youtu.be/7eJexJVCqJo)
+
 
 <h2>Description</h2>
 This project involved analyzing and configuring network architectures across three preconfigured virtual private clouds (VPCs) in Amazon Web Services (AWS). Each VPC contained essential network components, including EC2 instances, subnets, route tables, network access control lists (ACLs), and security groups. The project’s focus was to understand the network design, analyze traffic paths, and ensure secure communication between resources by updating security configurations.<br />
